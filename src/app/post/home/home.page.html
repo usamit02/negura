@@ -1,0 +1,17 @@
+<ion-split-pane contentId="menu-content" *ngIf="prop">
+  <ion-menu contentId="menu-content" side="start">
+    <ion-content>
+      <app-menu [user]="user" [prop]="prop" [rooms]="rooms" [room]="room" (change)="change('room$',$event)" (close)="menu.close()"></app-menu>
+    </ion-content>
+  </ion-menu>
+  <ion-menu contentId="menu-content" side="end">
+    <ion-content>
+      <app-charges [user]="user" [prop]="prop" [charges]="charges" [room]="room" (change)="change('charge$',$event)" (close)="menu.close()"></app-charges>
+    </ion-content>
+  </ion-menu>
+  <ion-router-outlet id="menu-content"></ion-router-outlet>
+</ion-split-pane>
+<!--
+
+
+-->

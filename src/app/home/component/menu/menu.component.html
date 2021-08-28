@@ -1,0 +1,75 @@
+<ion-header>
+  <ion-toolbar button="true" (click)="link('')">
+    <ion-title>
+      <ion-icon name="home"></ion-icon>ホーム
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-list *ngIf="user.id;else guest">
+  <app-column [user]="user" (close)="close.emit()"></app-column>
+  <ion-list>
+    <ion-item button="true" (click)="mode=mode==='config'?'':'config'">
+      <ion-icon name="settings"></ion-icon><span>設定</span>
+    </ion-item>
+    <ion-list *ngIf="mode==='config'" class="config">
+      <ion-item button="true" (click)="link('regist',true)">個人情報</ion-item>
+    </ion-list>
+    <ion-item button="true" (click)="contact()">
+      <ion-icon name="help-circle"></ion-icon><span>お問い合わせ</span>
+    </ion-item>
+    <ion-item button="true" (click)="logout.emit(true);close.emit()">
+      <ion-icon name="log-out"></ion-icon><span>ログアウト</span>
+    </ion-item>
+  </ion-list>
+</ion-list>
+<ng-template #guest>
+  <ion-item button="true" (click)="link('login')">
+    <ion-icon name="log-in"></ion-icon><span>ログイン</span>
+  </ion-item>
+</ng-template>
+
+<!--
+    <ion-segment name="shopOrder" scrollable="true" (ionChange)="shopOrder($event)" color="secondary">
+      <ion-segment-button value="投稿順">
+        <ion-label>投稿</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="コメント順">
+        <ion-label>コメント</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="いいね順">
+        <ion-label>いいね</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="50音順">
+        <ion-label>50音</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+    <ion-segment name="orderTerm" (ionChange)="orderTerm($event)">
+      <ion-segment-button value="１週間">
+        <ion-label>一週間</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="１月間">
+        <ion-label>１か月</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="３月間">
+        <ion-label>３か月</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="１年間">
+        <ion-label>１年間</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="全期間">
+        <ion-label>全期間</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+<ion-item *ngFor="let shop of shop$|async">
+  <span>{{shop.na}}</span>
+</ion-item>
+  <ion-label position="floating">期間</ion-label>
+      <ion-select name="term" placeholder="選択してください" cancelText="取消" okText="決定" [formControl]="term">
+        <ion-select-option value="day:3">３日</ion-select-option>
+        <ion-select-option value="day:7">１週</ion-select-option>
+        <ion-select-option value="month:1">１月</ion-select-option>
+        <ion-select-option value="month:3">３月</ion-select-option>
+        <ion-select-option value="year;1">１年</ion-select-option>
+        <ion-select-option value="all">全期間</ion-select-option>
+      </ion-select>
+-->

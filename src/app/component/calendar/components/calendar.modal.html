@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+      <ion-buttons slot="start">
+          <ion-button slot="icon-only" fill="clear" (click)="onCancel()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      {{ title }}
+      <ion-buttons slot="end">        
+        <ion-button slot="icon-only" fill="clear" [disabled]="!canDone()" (click)="done()">
+          <ion-icon name="checkmark"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+  </ion-toolbar>
+  <ion-calendar-week></ion-calendar-week>
+</ion-header>
+
+<ion-content (ionScroll)="onScroll($event)" class="calendar-page" [scrollEvents]="true"
+             [ngClass]="{'multi-selection': _d.pickMode === 'multi'}">
+
+  <div #months>
+    <ng-template ngFor let-month [ngForOf]="calendarMonths" [ngForTrackBy]="trackByIndex" let-i="index">
+      <div class="month-box" [attr.id]="'month-' + i">
+        <h4 class="text-center month-title">{{ _monthFormat(month.original.date) }}</h4>
+        <ion-calendar-month [month]="month"
+                            [pickMode]="_d.pickMode"
+                            [isSaveHistory]="_d.isSaveHistory"
+                            [id]="_d.id"
+                            [color]="_d.color"
+                            (change)="onChange($event)"
+                            [(ngModel)]="datesTemp">
+        </ion-calendar-month>
+      </div>
+    </ng-template>
+
+  </div>
+
+  <ion-infinite-scroll threshold="25%" (ionInfinite)="nextMonth($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+</ion-content>

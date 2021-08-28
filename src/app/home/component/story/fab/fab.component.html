@@ -1,0 +1,38 @@
+<ion-fab vertical="top" horizontal="end" slot="fixed">
+  <ion-fab-button *ngIf="pos.y>50" (click)="scroll(0)" color="light" size="small">
+    <ion-icon name="caret-up"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-button *ngIf="pos.story&&pos.y>pos.story+50" (click)="scroll(pos.story)" color="light" size="small">
+    <ion-icon name="book"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-button *ngIf="pos.chat&&pos.y>pos.chat+50" (click)="scroll(pos.chat)" color="light" size="small">
+    <ion-icon name="logo-wechat"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button *ngIf="pos.y+pos.h<pos.story" (click)="scroll(pos.story)" color="light" size="small">
+    <ion-icon name="book"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-button *ngIf="pos.y+pos.h<pos.chat" (click)="scroll(pos.chat)" color="light" size="small">
+    <ion-icon name="logo-wechat"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-button *ngIf="pos.y+pos.h<pos.H-50" (click)="scroll(pos.H)" color="light" size="small">
+    <ion-icon name="caret-down"></ion-icon>
+  </ion-fab-button>
+  <ng-container *ngIf="!eval && pos.y+pos.h===pos.H && uid && author && isStory">
+    <ion-fab-button (click)="evaluation('good')" size="small" color="clear">
+      <ion-icon name="thumbs-up" color="success"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-button (click)="evaluation('bad')" size="small" color="clear">
+      <ion-icon name="thumbs-down" color="dark"></ion-icon>
+    </ion-fab-button>
+  </ng-container>
+</ion-fab>
+
+<!--
+
+ <app-eval *ngIf="currentY+contentH===scrollH && user.id && blog.user && isStory" typ="blog" [id]="blog.id"
+    [user]="user.id" [author]="blog.user" [na]="blog.na"></app-eval>-->
+
+
+<!--    marker.user!==user.id       -->

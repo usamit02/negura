@@ -1,0 +1,37 @@
+<ion-header #header>
+  <ion-toolbar #toolbar>
+    <ion-menu-button slot="start"></ion-menu-button>
+    <ion-title>{{column.na}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="'/post/column/' + column.parent + '/' + column.id" slot="icon-only" fill="clear">
+        <ion-icon name="create" slot="icon-only" color="secondary"></ion-icon>
+      </ion-button>
+      <ion-menu-button menu="end">
+        <ion-icon name="footsteps"></ion-icon>
+      </ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content #content appHideHeader [header]="header" [scrollEvents]="true" class="ion-padding ion-no-border"
+  fullscreen="true">
+  <app-story #_story page="column" [param]="column" [user]="user" [datas]="storys" (isStory)="isStory=$event">
+  </app-story>
+  <ion-grid>
+    <ion-row>
+      <ion-col size-xs="12" size-sm="6" size-md="4" size-lg="4" size-xl="4" *ngFor="let column of columns">
+        <ion-card button="true" [routerLink]="'/column/'+column.id">
+          <ion-card-header>
+            <ion-card-title>{{column.na}}</ion-card-title>
+          </ion-card-header>
+          <img *ngIf="column.image" [src]="column.image" />
+          <ion-card-content>
+            <div class="description">{{column.description}}</div>
+            <div class="acked">{{column.acked|date}}</div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+<app-fab [content]="content" [story]="story" [uid]="user.id" [author]="column.user" [id]="column.id"
+[na]="column.na" [isStory]="isStory"></app-fab>

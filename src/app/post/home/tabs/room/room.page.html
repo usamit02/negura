@@ -1,0 +1,169 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+      <ion-back-button slot="start" [defaultHref]="'/reserve/' + prop.id + '/' + id" text=""></ion-back-button>
+      <ion-button (click)="undo()" fill="clear" [disabled]="!id">
+        <ion-icon name="refresh-circle" slot="icon-only" color="warning"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>滞在プランの設定</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="erase()" color="danger"  fill="clear" [disabled]="!id">
+        <ion-icon name="trash" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button (click)="new()" color="secondary" fill="clear" [disabled]="!id">
+        <ion-icon name="create" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button [disabled]="roomForm.pristine||saving||roomForm.invalid||!id" (click)="save()" fill="clear">
+        <ion-icon name="checkmark-circle" color="primary" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-menu-button menu="end">
+        <ion-icon name="logo-yen"></ion-icon>
+      </ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content #content [scrollEvents]="true" (ionScrollEnd)="onScrollEnd()">
+  <ion-grid>
+    <form [formGroup]="roomForm">
+      <ion-row>
+        <ion-col size-xs="12" size-sm="12" size-md="6" size-lg="6" size-xl="6">
+          <ion-title #basic class="Text">Basic</ion-title>
+          <ion-item>
+            <ion-label position="floating">
+              タイトル<ion-text color="danger">*</ion-text>
+            </ion-label>
+            <ion-input required [formControl]="room.na" minlength="2" maxlength="30" placeholder="ソロサイト"></ion-input>
+          </ion-item>
+          <span *ngIf="room.na.errors?.minlength||room.na.errors?.maxlength" class="errmsg">２文字以上３０文字以下で入力してください。</span>
+          <ion-segment scrollable [formControl]="room.typ">
+            <ion-segment-button *ngFor="let typ of roomTyps" [value]="typ.id">
+              <!--<img [src]="typ.icon" />-->
+              <ion-label>{{typ.na}}</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+          <ion-item>
+            <ion-label position="floating">
+              説明文
+            </ion-label>
+            <ion-textarea [formControl]="room.txt" autoGrow="true" maxlength="300"></ion-textarea>
+          </ion-item>
+          <span *ngIf="room.txt.errors?.minlength||room.txt.errors?.maxlength"
+            class="errmsg">２文字以上３００文字以下で入力してください。</span>
+          <ion-item>
+            <img *ngIf="imgBlob;else orgimg" class="img" [src]="imgBlob|safe:'url'" />
+            <ng-template #orgimg>
+              <img *ngIf="room.img.value;else noimg" class="img" [src]="room.img.value" />
+              <ng-template #noimg>
+                <img class="img" [src]="noimgUrl" />
+              </ng-template>
+            </ng-template>
+            <ion-buttons class="imgButtons">
+              <ion-button fill="clear" (click)="upImg.click()">
+                <ion-icon name="image" color="success" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button *ngIf="imgBlob" slot="end" (click)="imgBlob=''" fill="clear">
+                <ion-icon name="close-circle" slot="icon-only" color="danger"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          <input #upImg style="display: none;" type="file" (change)="imgChange($event)">
+          <canvas #canvas style="display: none;"></canvas>
+        </ion-col>
+        <ion-col size-xs="12" size-sm="12" size-md="6" size-lg="6" size-xl="6">
+          <ion-item>
+            <ion-icon name="bed" color="success"></ion-icon>
+            <ion-label>在庫</ion-label>
+            <ion-input slot="end" typ="number" [formControl]="room.qty" min="0" max="99" placeholder="5">
+            </ion-input>
+            <ion-button (click)="modalPlan('qty')" slot="end" fill="clear">
+              <ion-icon name="calendar" slot="icon-only" color="primary"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <span *ngIf="room.qty.errors?.min||room.qty.errors?.max" class="errmsg">0～99の整数を入力してください。</span>
+          <ion-item>
+            <ion-icon name="people-circle" color="success"></ion-icon>
+            <ion-label>収容人数</ion-label>
+            <ion-input slot="end" typ="number" [formControl]="room.max_people" min="0" max="100" placeholder="5">
+            </ion-input>
+            <ion-button slot="end" fill="clear">
+              <ion-icon name="calendar" slot="icon-only" color="light"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <span *ngIf="room.max_people.errors?.min||room.max_people.errors?.max"
+            class="errmsg">0～100の整数を入力してください。</span>
+          <ion-item>
+            <ion-icon name="card" color="tertiary"></ion-icon>
+            <ion-label>料金</ion-label>
+            <ion-input slot="end" typ="number" [formControl]="room.price" min="0" max="100000" placeholder="1000">
+            </ion-input>
+            <ion-buttons slot="end">
+            <ion-button routerLink="charge" slot="icon-only" fill="clear">
+              <ion-icon name="settings" slot="icon-only" color="medium"></ion-icon>
+            </ion-button>
+            <ion-button (click)="modalPlan('price')" slot="icon-only" fill="clear">
+              <ion-icon name="calendar" slot="icon-only" color="primary"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          </ion-item>
+          <span *ngIf="room.price.errors?.min||room.price.errors?.max" class="errmsg">0～100000の整数を入力してください。</span>
+          <ion-item *ngIf="room.typ.value == 5">
+            <ion-icon name="prism" color="success"></ion-icon>
+            <ion-label>面積</ion-label>
+            <ion-input slot="end" typ="number" [formControl]="room.size" min="0" max="100000" placeholder="1000">
+            </ion-input>
+            <ion-button slot="end" fill="clear">
+              <ion-icon name="calendar" slot="icon-only" color="light"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <span *ngIf="room.size.errors?.min||room.size.errors?.max" class="errmsg">0～100000の整数を入力してください。</span>
+          <ion-item>
+            <ion-icon name="chatbubbles" color="primary"></ion-icon>
+            <ion-label>コメント欄</ion-label>
+            <ion-toggle [formControl]="room.chat"></ion-toggle>
+          </ion-item>
+          <ion-item>
+            <ion-icon name="pause" color="warning"></ion-icon>
+            <ion-label>休止中</ion-label>
+            <ion-toggle [formControl]="room.close"></ion-toggle>
+          </ion-item>
+          <ion-item>
+            <ion-icon name="sync" color="warning"></ion-icon>
+            <ion-label>beds24</ion-label>
+            <ion-input slot="end" typ="number" [formControl]="room.beds24id" min="0" max="1000000" placeholder="5">
+            </ion-input>
+            <ion-toggle slot="end" [formControl]="room.beds24" (ionChange)="modalbeds24()"></ion-toggle>
+          </ion-item>
+          <span *ngIf="room.beds24.errors?.min||room.beds24.errors?.max" class="errmsg">部屋idを入力してください。</span>
+        </ion-col>
+      </ion-row>
+    </form>
+  </ion-grid>
+  <ion-title #essay class="Text">Essay</ion-title>
+  <app-story typ="room" [document]="{id:id,user:user.id}" [user]="user"></app-story>
+  <ion-fab vertical="top" horizontal="end" slot="fixed">
+    <ion-fab-button *ngIf="currentY>basicY+50" (click)="scroll(basicY)" color="light" size="small">
+      Basic
+    </ion-fab-button>
+    <ion-fab-button *ngIf="currentY>planY+50" (click)="scroll(planY)" color="light" size="small">
+      Plan
+    </ion-fab-button>
+  </ion-fab>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button *ngIf="currentY+contentH<planY" (click)="scroll(planY)" color="light" size="small">
+      Plan
+    </ion-fab-button>
+    <ion-fab-button *ngIf="currentY+contentH<essayY" (click)="scroll(essayY)" color="light" size="small">
+      Essay
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
+<!--
+<ion-label position="floating">または</ion-label>
+[disabled]="!calendar.price.dirty&&!calendar.rate.dirty"
+<ion-button (click)="rangeSave()" [disabled]="!getPrice.dirty"fill="clear" slot="end">
+              　 <ion-icon name="checkmark-circle" slot="icon-only" color="primary"></ion-icon>
+            </ion-button>
+            [formControl]="calendar.weeks"
+-->

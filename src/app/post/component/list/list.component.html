@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-item lines="none">
+      <ion-button slot="start" (click)="pop.dismiss()" fill="clear">
+        　 <ion-icon name="close-circle" slot="icon-only" color="dark"></ion-icon>
+      </ion-button>
+      <ion-searchbar placeholder="検索" (ionInput)="seek($event)">
+      </ion-searchbar>
+    </ion-item>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-grid *ngIf="lists.length;else noList">
+    <ion-row>
+      <ng-container *ngIf="prop.columns||prop.reports;else notColumn">
+        <ion-col *ngFor="let list of lists" button="true" size-xs="6" size-sm="4" size-md="4" size-lg="4" size-xl="4"
+          (click)="pop.dismiss(list)" [class.hidden]="list.hidden">
+          <div>{{list.na}}</div>
+          <img *ngIf="list.image" [src]="list.image" class="columnImg">
+          <img *ngIf="list.img" [src]="list.img" class="columnImg">
+          <div>{{list.discription}}</div>
+          <div class="created">{{list.created|date:'chat'}}</div>
+        </ion-col>
+        </ng-container>
+        <ng-template #notColumn>
+          <ion-col *ngFor="let list of lists" button="true" size-xs="6" size-sm="4" size-md="4" size-lg="4" size-xl="4"
+            (click)="pop.dismiss(list)" [class.hidden]="list.hidden">
+            <ion-text> {{list.na}}</ion-text>
+            <img *ngIf="list.simg;else img" [src]="list.simg" class="img">
+            <ng-template #img>
+              <img *ngIf="list.img" [src]="list.img" class="img">
+            </ng-template>
+          </ion-col>
+        </ng-template>      
+    </ion-row>
+  </ion-grid>
+  <ng-template #noList>
+    <ion-item lines="none" style="text-align: center;">
+      <ion-text>該当ありません</ion-text>
+    </ion-item>
+  </ng-template>
+</ion-content>
+<!-- 
+ 
+ 
+
+
+ <div class="wrap">
+    <div *ngFor="let list of lists" button="true" [class]="table" (click)="pop.dismiss(list)">
+      <img [src]="list.simg" [class]="prop.table + 'Img'">
+      {{list.na}}
+    </div>
+  </div>
+
+  
+-->

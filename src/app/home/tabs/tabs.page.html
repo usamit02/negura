@@ -1,0 +1,25 @@
+<ion-tabs id="tabBar">
+
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="facility">
+      <ion-icon name="storefront"></ion-icon>
+      <ion-label>施設</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="reserve">
+      <ion-icon name="alarm"></ion-icon>
+      <ion-label>予約</ion-label>
+    </ion-tab-button>
+    
+    <ion-tab-button tab="nedoko" *ngIf="prop.id===4">
+      <ion-icon name="bonfire"></ion-icon>
+      <ion-label>ﾚﾝﾀﾙ</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="location">
+      <ion-icon name="locate"></ion-icon>
+      <ion-label>場所</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+
+</ion-tabs>

@@ -1,0 +1,55 @@
+<ion-header #header>
+  <ion-toolbar #toolbar>
+    <ion-menu-button slot="start"></ion-menu-button>
+    <ion-back-button slot="start" defaultHref="/reserve" text=""></ion-back-button>
+    <ion-title>{{title}}を予約する</ion-title>
+    <ion-button [disabled]="!editable" [routerLink]="'/post/room/' + room.id" slot="end" fill="clear">
+      <ion-icon name="create" slot="icon-only" color="secondary"></ion-icon>
+    </ion-button>
+    <ion-menu-button menu="end" slot="end">
+      <ion-icon name="footsteps"></ion-icon>
+    </ion-menu-button>
+  </ion-toolbar>
+</ion-header>
+<ion-content #content appHideHeader [header]="header" [scrollEvents]="true" class="ion-padding ion-no-border"
+  fullscreen="true">
+  <ion-item *ngIf="book.from" button="true" (click)="openCalendar()">
+    <ion-icon name="calendar" color="primary"></ion-icon>
+    <ion-label>日程</ion-label>
+    <ion-text *ngIf="calendarService.aday else fromto;">{{book.from|date}}　日帰り</ion-text>
+    <ng-template #fromto>
+      <ion-text>{{book.from|date}}から{{book.to|date:'tomorrow'}}まで　{{night(book.from,book.to)}}泊</ion-text>
+    </ng-template>
+  </ion-item>
+  <ion-item button="true" (click)="openUnit()">
+    <ion-icon name="people" color="primary"></ion-icon>{{unitStr.people}}
+    <ion-icon name="car" color="primary"></ion-icon>{{unitStr.vehicle}}
+    (size:{{sizeStr}})
+  </ion-item>
+  <p></p>
+  <ion-segment [(ngModel)]="method">
+    <ion-segment-button value="hold">
+      <ion-label>予約のみ（現地決済）</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="pay">
+      <ion-label>予約して支払う</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+  <p #reserve></p>
+  <ng-container *ngIf="user.id else login;" [ngSwitch]="method"> 
+    <app-hold *ngSwitchCase="'hold'" [amount]="book.amount" (pay)="pay($event)"></app-hold>
+    <app-pay1 *ngSwitchCase="'pay'" [user]="user" [amount]="book.amount" (pay)="pay($event)"></app-pay1>
+  </ng-container>
+  <ng-template #login>
+    <div style="text-align: center">
+      <ion-button routerLink="/login">
+        <ion-icon name="log-in"></ion-icon>ログインして続ける
+      </ion-button>
+    </div>
+  </ng-template>
+  <app-story #_story page="book" [param]="param" (isStory)="isStory=$event"></app-story>
+  <app-chat #_chat page="book" [param]="param" [content]="content" [user]="user"></app-chat>
+</ion-content>
+<app-fab page="book" [content]="content" [story]="story" [chat]="chat" [uid]="user.id" [author]="prop.users[0]"
+  [id]="room.id" [na]="room.na" [isStory]="isStory"></app-fab>
+<app-send page="book" [id]="room.id" [user]="user" [content]="content" [chat]="chat"></app-send>

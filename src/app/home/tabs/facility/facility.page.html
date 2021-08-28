@@ -1,0 +1,45 @@
+<ion-header #header>
+  <ion-toolbar #toolbar>
+    <ion-menu-button slot="start"></ion-menu-button>
+    <ion-title>{{prop.na}}</ion-title>
+    <ion-menu-button menu="end" slot="end">
+      <ion-icon name="footsteps"></ion-icon>
+    </ion-menu-button>
+  </ion-toolbar>
+</ion-header>
+<ion-content #content appHideHeader [header]="header" [scrollEvents]="true" class="ion-padding ion-no-border" fullscreen="true">
+  <ion-slides #slides pager="true" [options]="slideOpts" (ionSlideDidChange)="slideChange($event)">
+    <ion-slide *ngFor="let img of imgs">
+      <img [src]="img.url" />
+    </ion-slide>
+  </ion-slides>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="1">
+        <ion-button class="slider-nav" fill="clear" (click)="slides.slidePrev(500)">
+          <ion-icon name="chevron-back-circle" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-col>
+      <ion-col size="10" class="txt">{{txt}}</ion-col>
+      <ion-col size="1">
+        <ion-button class="slider-nav" fill="clear" (click)="slides.slideNext(500)">
+          <ion-icon name="chevron-forward-circle" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <app-story #_story page="facility" [param]="param" (isStory)="isStory=$event"></app-story>
+  <app-chat #_chat page="facility" [param]="param" [content]="content" [user]="user"></app-chat>
+</ion-content>
+<app-fab page="facility" [content]="content" [story]="story" [chat]="chat" [uid]="user.id" [author]="prop.users[0]" [id]="prop.id"
+  [na]="prop.na" [isStory]="isStory"></app-fab>
+ <app-send page="facility" [id]="prop.id" [user]="user" [content]="content" [chat]="chat"></app-send>
+<!--
+
+
+<app-send *ngIf="blog.chat&&currentY+contentH>chatY"
+    [id]="blog.id.toString()" page="blog" thread="" [user]="user" [content]="content"></app-send>
+ 
+
+  
+-->

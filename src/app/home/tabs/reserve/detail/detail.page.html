@@ -1,0 +1,75 @@
+<ion-header #header>
+  <ion-toolbar #toolbar>
+    <ion-menu-button slot="start"></ion-menu-button>
+    <ion-back-button slot="start" defaultHref="/reserve" text=""></ion-back-button>
+    <ion-title>{{title}}</ion-title>
+    <ion-button (click)="cancel()" slot="end" fill="clear">
+      <ion-icon name="trash" slot="icon-only" color="danger"></ion-icon>
+    </ion-button>
+    <ion-menu-button menu="end" slot="end">
+      <ion-icon name="footsteps"></ion-icon>
+    </ion-menu-button>
+  </ion-toolbar>
+</ion-header>
+<ion-content #content appHideHeader [header]="header" [scrollEvents]="true" class="ion-padding ion-no-border"
+  fullscreen="true">
+  <ion-item *ngFor="let b of books;index as i">
+    <span *ngIf="b.aday else stay" slot="start">{{b.dated|date}}</span>
+    <ng-template #stay>
+      <span style="margin-right: 0;" slot="start">{{b.dated|date}}～</span>
+      <span *ngIf="i === books.length - 1" style="margin-left:0;" slot="start">{{b.dated|date:'tomorrow'}}</span>
+    </ng-template>
+    <ion-text button="true" (click)="openUnit(b)" class="memo">{{b.unit}} (size:{{b.size}})</ion-text>
+    <ion-text slot="end">{{b.amount | number}}円</ion-text>　
+  </ion-item>
+  <p></p>
+  <ion-title *ngIf="book0.amount">
+    <div style="text-align: center;">利用料：{{book0.amount | number}}円</div>
+  </ion-title>
+  <p></p>
+  <ng-container *ngIf="book.from">
+    <ion-item button="true" (click)="openCalendar()">
+      <ion-icon name="calendar" color="primary"></ion-icon>
+      <ion-label>日程</ion-label>
+      <ion-text *ngIf="book.aday && book.from.getTime()===book.to.getTime() else fromto;">{{book.from|date}}　日帰り
+      </ion-text>
+      <ng-template #fromto>
+        <ion-text>{{book.from|date}}から{{book.to|date:'tomorrow'}}まで　{{night(book.from,book.to)}}泊</ion-text>
+      </ng-template>
+    </ion-item>
+    <ion-item *ngFor="let u of units;index as i" button="true" (click)="openUnit(u)">
+      <ion-icon name="people" color="primary"></ion-icon>{{unitStrs[i].people}}
+      <ion-icon name="car" color="primary"></ion-icon>{{unitStrs[i].vehicle}}
+      (size:{{unitStrs[i].size}})
+      <ng-container *ngIf="u.from && u.to">
+        <ion-text *ngIf="book.aday && u.from.getTime() === u.to.getTime() else term" class="memo">{{u.from|date}}　日帰り
+        </ion-text>
+        <ng-template #term>
+          <ion-text class="memo">{{u.from|date}}から{{u.to|date:'tomorrow'}}まで　{{night(u.from,u.to)}}泊</ion-text>
+        </ng-template>
+      </ng-container>
+    </ion-item>
+  </ng-container>
+  <p></p>
+  <ion-title *ngIf="book.amount && book.amount !== book0.amount">
+    <div style="text-align: center;">新利用料：{{book.amount | number}}円</div>
+  </ion-title>
+  <p></p>
+  <ng-container *ngIf="user.id else login;">
+    <ng-container *ngIf="isChange" [ngSwitch]="book.method">
+      <app-hold *ngSwitchCase="'hold'" [amount]="book.amount" [amount0]="book0.amount" (pay)="pay($event)"></app-hold>
+      <app-pay1 *ngSwitchCase="'pay'" [user]="user" [amount]="book.amount" [amount0]="book0.amount" (pay)="pay($event)">
+      </app-pay1>
+    </ng-container>
+  </ng-container>
+  <ng-template #login>
+    <div style="text-align: center">
+      <ion-button routerLink="/login">
+        <ion-icon name="log-in"></ion-icon>ログインして確認する
+      </ion-button>
+    </div>
+  </ng-template>
+  <app-chat #_chat page="bookdetail" [param]="param" [content]="content" [user]="user"></app-chat>
+</ion-content>
+<app-fab [content]="content" [chat]="chat"></app-fab>
+<app-send page="bookdetail" [id]="book.payjp" [user]="user" [content]="content" [chat]="chat"></app-send>

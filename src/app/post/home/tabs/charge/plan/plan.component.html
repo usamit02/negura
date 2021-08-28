@@ -1,0 +1,144 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-item lines="none">
+      <ion-buttons slot="start">
+        <ion-button slot="icon-only" (click)="modal.dismiss()" fill="clear">
+          　 <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ng-container *ngIf="range.from.getTime()===range.to.getTime();else fromto">{{range.from|date}}
+      </ng-container>
+      <ng-template #fromto>{{range.from|date}}～{{range.to|date}}　
+        <ion-select multiple="true" [(ngModel)]="weeks" slot="end">
+          <ion-select-option value='-1'>全日</ion-select-option>
+          <ion-select-option value='6'>土</ion-select-option>
+          <ion-select-option value='7'>祝前日</ion-select-option>
+          <ion-select-option value='0'>日</ion-select-option>
+          <ion-select-option value='1'>月</ion-select-option>
+          <ion-select-option value='2'>火</ion-select-option>
+          <ion-select-option value='3'>水</ion-select-option>
+          <ion-select-option value='4'>木</ion-select-option>
+          <ion-select-option value='5'>金</ion-select-option>
+        </ion-select> 　
+      </ng-template>
+      <ion-buttons slot="end">
+        <ion-button slot="icon-only" [disabled]="!change" (click)="save()" fill="clear">
+          　 <ion-icon name="checkmark"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-toolbar>
+</ion-header>
+<ion-calendar class="calendar" [(ngModel)]="range" [options]="calendarOption" type="js-date"
+  (monthChange)="onMonthChange($event)"></ion-calendar>
+<ion-content padding>
+  <form [formGroup]="calendarForm">
+    <ng-container *ngIf="typ==='price'">
+      <ion-item>
+        <ion-icon name="card" color="tertiary"></ion-icon>
+        <ion-label>料金(\)</ion-label>
+        <ion-input typ="number" slot="end" [formControl]="calendar.price" min="0" max="100000" placeholder="1000">
+        </ion-input>
+        <ion-button (click)="inc('price',100)" slot="end" fill="clear" [disabled]="calendar.price.errors?.max">
+          <ion-icon name="caret-up-circle" slot="icon-only" color="medium"></ion-icon>
+        </ion-button>
+        <ion-button (click)="inc('price',-100)" slot="end" fill="clear" [disabled]="calendar.price.errors?.min">
+          <ion-icon name="caret-down-circle" slot="icon-only" color="medium"></ion-icon>
+        </ion-button>
+        <ion-button (click)="addPlan('price')" slot="end" fill="clear"
+          [disabled]="!(calendar.price.dirty&&calendar.price.valid)">
+          <ion-icon name="add-circle" slot="icon-only" color="secondary"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <span *ngIf="calendar.price.errors?.min||calendar.price.errors?.max" class="errmsg">0～99999の整数を入力してください。</span>
+      <ion-item>
+        <ion-icon name="calculator" color="tertiary"></ion-icon>
+        <ion-label>料率(%)</ion-label>
+        <ion-input slot="end" typ="number" [formControl]="calendar.rate" min="0" max="1000" placeholder="120">
+        </ion-input>
+        <ion-button (click)="inc('rate',10)" slot="end" fill="clear" [disabled]="calendar.rate.errors?.max">
+          <ion-icon name="caret-up-circle" slot="icon-only" color="medium"></ion-icon>
+        </ion-button>
+        <ion-button (click)="inc('rate',-10)" slot="end" fill="clear" [disabled]="calendar.rate.errors?.min">
+          <ion-icon name="caret-down-circle" slot="icon-only" color="medium"></ion-icon>
+        </ion-button>
+        <ion-button (click)="addPlan('rate')" slot="end" fill="clear"
+          [disabled]="!(calendar.rate.dirty&&calendar.rate.valid)">
+          <ion-icon name="add-circle" slot="icon-only" color="secondary"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <span *ngIf="calendar.rate.errors?.min||calendar.rate.errors?.max" class="errmsg">0～1000の整数を入力してください。</span>
+    </ng-container>
+    <ng-container *ngIf="typ==='minmax'">
+      <ion-item>
+        <ion-icon name="card" color="tertiary"></ion-icon>
+        <ion-label>最小</ion-label>
+        <ion-input typ="number" slot="end" [formControl]="calendar.min" min="0" max="10000" placeholder="1">
+        </ion-input>
+        <ion-button (click)="inc('min',1)" slot="end" fill="clear" [disabled]="calendar.min.errors?.max">
+          <ion-icon name="caret-up-circle" slot="icon-only" color="medium"></ion-icon>
+        </ion-button>
+        <ion-button (click)="inc('min',-1)" slot="end" fill="clear" [disabled]="calendar.min.errors?.min">
+          <ion-icon name="caret-down-circle" slot="icon-only" color="medium"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <span *ngIf="calendar.min.errors?.min||calendar.min.errors?.max" class="errmsg">0～9999の整数を入力してください。</span>
+      <ion-item>
+        <ion-icon name="calculator" color="tertiary"></ion-icon>
+        <ion-label>最大</ion-label>
+        <ion-input slot="end" typ="number" [formControl]="calendar.max" min="0" max="10000" placeholder="10">
+        </ion-input>
+        <ion-button (click)="inc('max',1)" slot="end" fill="clear" [disabled]="calendar.max.errors?.max">
+          <ion-icon name="caret-up-circle" slot="icon-only" color="medium"></ion-icon>
+        </ion-button>
+        <ion-button (click)="inc('max',-1)" slot="end" fill="clear" [disabled]="calendar.max.errors?.min">
+          <ion-icon name="caret-down-circle" slot="icon-only" color="medium"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <div style="text-align: center;">
+        <ion-button (click)="addPlan('minmax')" slot="end" fill="clear"
+          [disabled]="!(calendar.min.dirty&&calendar.min.valid) && !(calendar.max.dirty&&calendar.max.valid)">
+          <ion-icon name="add-circle" slot="icon-only" color="secondary"></ion-icon>
+        </ion-button>
+      </div>
+      <span *ngIf="calendar.max.errors?.min||calendar.max.errors?.max" class="errmsg">0～10000の整数を入力してください。</span>
+    </ng-container>
+    <ng-container *ngIf="typ!=='price' && typ!=='minmax'">
+      <ion-item>
+        <ion-icon name="bed" color="success"></ion-icon>
+        <ion-label>{{typ}}</ion-label>
+        <ion-input slot="end" typ="number" [formControl]="calendar[typ]" min="0" max="100" placeholder="1">
+        </ion-input>
+        <ion-button (click)="inc(typ,1)" slot="end" fill="clear" [disabled]="calendar[typ].errors?.max">
+          <ion-icon name="caret-up-circle" slot="icon-only" color="medium"></ion-icon>
+        </ion-button>
+        <ion-button (click)="inc(typ,-1)" slot="end" fill="clear" [disabled]="calendar[typ].errors?.min">
+          <ion-icon name="caret-down-circle" slot="icon-only" color="medium"></ion-icon>
+        </ion-button>
+        <ion-button (click)="addPlan(typ)" slot="end" fill="clear"
+          [disabled]="!(calendar[typ].dirty&&calendar[typ].valid)">
+          <ion-icon name="add-circle" slot="icon-only" color="secondary"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <span *ngIf="calendar[typ].errors?.min||calendar[typ].errors?.max" class="errmsg">0～の整数を入力してください。</span>
+    </ng-container>
+    <ion-item *ngIf="typ==='qty'">
+      <ion-icon name="pause" color="warning"></ion-icon>
+      <ion-label>休止</ion-label>
+      <ion-toggle [formControl]="calendar.close" (ionChange)="addPlan('close')"></ion-toggle>
+    </ion-item>
+  </form>
+  <ion-item *ngFor="let plan of monthPlans" lines="none">
+    <ng-container *ngIf="plan.range;else oneday">
+      <ion-text slot="start">{{plan.from|date}}～{{plan.to|date}}</ion-text>
+      <ion-label slot="end">{{plan.value}}</ion-label>
+    </ng-container>
+    <ng-template #oneday>
+      <ion-text slot="start">{{plan.from|date}}</ion-text>
+      <ion-label slot="end">{{plan.value}}</ion-label>
+    </ng-template>
+    <ion-button fill="clear" (click)="delPlan(plan)" slot="end">
+      <ion-icon name="close-circle" slot="icon-only" color="danger"></ion-icon>
+    </ion-button>
+  </ion-item>
+</ion-content>

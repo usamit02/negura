@@ -1,0 +1,18 @@
+<div class="ion-padding">
+  <p></p>
+  <ng-container *ngIf="amount0 else firstpay">
+    <ion-title *ngIf="amount - amount0 > 0 else refund">{{amount - amount0 | number}}円高くなります</ion-title>
+    <ng-template #refund>
+      <ion-title *ngIf="amount && amount0 - amount > 0">{{amount0 - amount | number}}円安くなります</ion-title>
+    </ng-template>
+  </ng-container>
+  <ng-template #firstpay>
+    <ion-title *ngIf="amount else noamount">利用料：{{amount | number}}円</ion-title>
+    <ng-template #noamount>
+      <ion-title style="color:red">{{amount0?"変更":"予約"}}できません</ion-title>
+    </ng-template>
+  </ng-template>
+  <div *ngIf="method" style="text-align: center;">
+    <ion-button color="tertiary" (click)="hold()">同意して{{method}}する</ion-button>
+  </div>
+</div>

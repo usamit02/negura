@@ -1,0 +1,85 @@
+<ion-grid>
+  <ion-row *ngFor="let story of storys;let i=index">
+    <ion-col size-xs="12" size-sm="12" size-md="4" size-lg="4" size-xl="4" style="text-align: center;">
+      <div class="media" (drop)="dropMedia($event,i)">
+        <ion-buttons *ngIf="document.user===user.id||user.admin" class="mediaButton">
+          <ion-button *ngIf="story.lat&&story.lng" (click)="setMarker(i)" fill="clear">
+            <ion-icon name="location" color="google" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" (click)="upmedia.click()">
+            <ion-icon name="image" color="success" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" (click)="mediaUrl(i)">
+            <ion-icon name="logo-youtube" color="google" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button *ngIf="story.media" fill="clear" (click)="mediaDel(i)">
+            <ion-icon name="close-circle" color="danger" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <div *ngIf="story.media" [innerHtml]="story.media|safe:'html'"></div>
+      </div>
+      <input #upmedia style="display: none;" type="file" (change)="upload($event,i)">
+      <ion-progress-bar *ngIf="uploading===i" [value]="progress" color="success"></ion-progress-bar>
+    </ion-col>
+    <ion-col size-xs="12" size-sm="12" size-md="8" size-lg="8" size-xl="8" style="display:flex;">
+      <editor [id]="'tiny' + i" class="tiny" [class.rest]="story.rest"
+        apiKey="k5ac3vz6w0fxrw863ng9oartu6tyagjk7kmra9jetazslyfz" [init]="tinyinit" [inline]="true"></editor>
+      <ion-buttons *ngIf="story.button" class="setButton">
+        <ion-button *ngIf="typ==='report'||typ==='plan'" (click)="setMarker(i)" fill="clear">
+          <ion-icon name="location" slot="icon-only" color="google"></ion-icon>
+        </ion-button>
+        <ion-button (click)="storyRest(i)" fill="clear">
+          <ion-icon name="lock-closed" slot="icon-only" color="tertiary"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="i" (click)="storyUp(i)" fill="clear">
+          <ion-icon name="arrow-up-circle" slot="icon-only" color="warning"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="i<storys.length-1" (click)="storyDown(i)" fill="clear">
+          <ion-icon name="arrow-down-circle" slot="icon-only" color="warning"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="storyDel(i)">
+          <ion-icon name="trash" slot="icon-only" color="danger"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <div>
+        <ion-button *ngIf="document.user===user.id||user.admin" (click)="story.button=!story.button" slot="end"
+          fill="clear">
+          <ion-icon name="settings" color="medium" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+<div style="text-align: center;">
+  <ion-button (click)="storyAdd()" fill="clear" [disabled]="!parent">
+    <ion-icon name="add-circle" slot="icon-only" color="secondary"></ion-icon>
+  </ion-button>
+</div>
+<canvas style='display:none;'></canvas>
+
+<!--
+<ion-col size-xs="3" size-sm="3" size-md="2" size-lg="2" size-xl="2">
+        <ion-buttons>
+          <ion-button *ngIf="i" (click)="storyUp(i)" slot="start" fill="clear">
+            <ion-icon name="arrow-dropup-circle" slot="icon-only" color="warning"></ion-icon>
+          </ion-button>
+          <ion-button *ngIf="i<texts.controls.length" (click)="storyDown(i)" fill="clear">
+            <ion-icon name="arrow-dropdown-circle" slot="icon-only" color="warning"></ion-icon>
+          </ion-button>
+          <ion-button slot="end" fill="clear" (click)="storyDel(i)">
+            <ion-icon name="close-circle" slot="icon-only" color="danger"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-col>
+
+
+<div formArrayName="medias" style="display:none;">
+    <div *ngFor="let media of medias.controls;let i=index">
+      <input type="text" [formControlName]="i" />
+    </div>
+  </div>
+
+
+ <div class="tiny" [id]="'tiny'+i"></div>
+
+-->

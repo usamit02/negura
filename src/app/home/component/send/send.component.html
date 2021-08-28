@@ -1,0 +1,47 @@
+<ion-footer id="footer" class="ion-no-border">
+  <ion-toolbar #bar class="ion-no-border">
+    <ion-item *ngIf="user.id;else login" class="ion-no-border">
+      <ion-button class="mediaButton" [color]="addcolor" (click)="mediaButton.add=!mediaButton.add" (press)="unfile()"
+        fill="clear" slot="start">
+        <ion-icon name="add-circle" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ng-container *ngIf="mediaButton.add">
+        <ion-button class="mediaButton" (click)="popEmoji()" fill="clear" slot="start">
+          <ion-icon color="warning" name="happy" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-button class="mediaButton" (click)="upload.click()" fill="clear" slot="start">
+          <ion-icon color="success" name="image" slot="icon-only"></ion-icon>
+        </ion-button>
+        <input #upload style="display:none;" type="file" (change)="fileup($event)" />
+      </ng-container>
+      <div #talk class="talk" contenteditable="true"></div>
+      <ion-button id="send" [disabled]="!sendable" (click)="send()" slot="end">
+        <ion-icon name="send"></ion-icon>
+      </ion-button>
+    </ion-item>
+    <ng-template #login>
+      <div style="text-align: center">
+        <ion-button (click)="clickLogin()">
+          <ion-icon name="log-in"></ion-icon>ログインしてコメント
+        </ion-button>
+      </div>
+    </ng-template>
+  </ion-toolbar>
+  <canvas #canvas></canvas>
+  <ion-fab *ngIf="mentions.length" vertical="top" horizontal="start" slot="fixed" edge="true">
+    <ion-fab-button size="small" color="warning">
+      <ion-icon name="notifications"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="end">
+      <ion-fab-button *ngFor="let mention of mentions" (click)="deleteMention(mention)">
+        <ion-avatar><img [src]="mention.avatar" /></ion-avatar>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+</ion-footer>
+
+<!--
+
+ [class.open]="visible" [class.close]="!visible"
+
+-->

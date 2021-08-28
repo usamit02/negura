@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-item lines="none">
+      <ion-buttons slot="start">
+        <ion-button slot="icon-only" (click)="modal.dismiss()" fill="clear">
+          　 <ion-icon name="close" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-icon name="people" color="primary"></ion-icon>{{unitStr.people}}
+      <ion-icon name="car" color="primary"></ion-icon>{{unitStr.vehicle}}
+      (size:{{sizeStr}})
+      <ion-buttons slot="end">      
+        <ion-button slot="icon-only" [disabled]="form.invalid||form.pristine" (click)="save()" fill="clear">
+          　 <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  <form [formGroup]="form">
+    <ng-container *ngFor="let ctl of control | keyvalue : nosort">
+      <ng-container *ngIf="charge[ctl.key] else segTemp;">
+        <ion-item>
+          <ion-icon name="bed" color="success"></ion-icon>
+          <ion-label>{{charge[ctl.key].na}}</ion-label>
+          <ion-input slot="end" typ="number" [formControl]="ctl.value" (ionChange)="setValue()">
+          </ion-input>
+          <ion-button (click)="inc(ctl.value,1)" slot="end" fill="clear" [disabled]="control[ctl.key].errors?.max">
+            <ion-icon name="caret-up-circle" slot="icon-only" color="medium"></ion-icon>
+          </ion-button>
+          <ion-button (click)="inc(ctl.value,-1)" slot="end" fill="clear" [disabled]="control[ctl.key].errors?.min">
+            <ion-icon name="caret-down-circle" slot="icon-only" color="medium"></ion-icon>
+          </ion-button>
+        </ion-item>
+        <span *ngIf="control[ctl.key].errors?.min||control[ctl.key].errors?.max"
+          class="errmsg">{{charge[ctl.key].min}}～{{charge[ctl.key].max}}の整数を入力してください。</span>
+      </ng-container>
+      <ng-template #segTemp [formArrayName]="ctl.key">
+        <ion-list *ngFor="let arr of get(ctl.key).controls;let i=index" [formGroupName]="i">
+          <ion-item>
+            <ion-segment scrollable formControlName="id" (ionChange)="change()">
+              <ion-segment-button *ngFor="let seg of segment[ctl.key]" [value]="seg.id">
+                <img [src]="seg.icon" />
+                <ion-label>{{seg.na}}</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+            <ion-button (click)="del(ctl.key,i)" slot="end" fill="clear" [disabled]="">
+              <ion-icon name="close-circle" slot="icon-only" color="danger"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-list>
+        <div style="text-align: center;">{{unitTyp[ctl.key].na}}の追加
+          <ion-button (click)="add(ctl.key,segment[ctl.key][0].key)" slot="end" fill="clear" [disabled]="">
+            <ion-icon name="add-circle" slot="icon-only" color="secondary"></ion-icon>
+          </ion-button>
+        </div>
+      </ng-template>
+    </ng-container>
+  </form>
+</ion-content>

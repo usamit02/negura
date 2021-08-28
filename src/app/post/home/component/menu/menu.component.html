@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar button="true" (click)="link('')">
+    <ion-title>
+      <ion-icon name="home"></ion-icon>ホーム
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ng-container *ngIf="user.id;else guest">
+  <ion-list *ngFor="let typ of typs;let i=index;">
+    <ion-item>{{typ.na}}
+      <ion-button (click)="typ.hide=!typ.hide" slot="end" fill="clear">
+        <ion-icon *ngIf="typ.hide else show" name="caret-down" slot="icon-only" color="dark"></ion-icon>
+        <ng-template #show>
+          <ion-icon name="caret-up" slot="icon-only" color="dark"></ion-icon>
+        </ng-template>
+      </ion-button>
+    </ion-item>
+    <ng-container *ngIf="!typ.hide">
+      <ion-reorder-group (ionItemReorder)="reorder(i,$event)" disabled="false">
+        <ion-item *ngFor="let r of typ.rooms" (click)="change.emit(r.id)" [class.position]="r.id===room" button="true">
+          <ion-reorder slot="start"></ion-reorder>
+          <ion-label>{{r.na}}</ion-label>
+        </ion-item>
+      </ion-reorder-group>
+      <div class="addwrap">
+        <ion-button [routerLink]="'/post/room/typ/' + typ.id" fill="clear">
+          <ion-icon name="add-circle" slot="icon-only" color="secondary"></ion-icon>
+        </ion-button>
+      </div>
+    </ng-container>
+  </ion-list>
+</ng-container>
+<ng-template #guest>
+  <ion-item button="true" (click)="link('login')">
+    <ion-icon name="log-in"></ion-icon><span>ログイン</span>
+  </ion-item>
+</ng-template>

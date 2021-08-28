@@ -1,0 +1,27 @@
+.leftLabel{
+  width:10em;
+}
+.leftText{
+  width:10.5em;
+}
+.errmsg{
+  color:red;
+}
+.imgDiv{
+  min-height: 3em;
+}
+.img{
+   border-radius: 10px;
+   max-width: 100%;
+   position:relative;
+}
+.imgButtons{
+  z-index: 2;
+  position: absolute;
+  left: 40%;
+  top: 40%;
+  margin: auto;
+}
+ion-segment{
+  padding-top:10px;
+}

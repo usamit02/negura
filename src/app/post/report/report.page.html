@@ -1,0 +1,167 @@
+<ion-header>
+  <ion-toolbar>
+    <div class="toolbar">
+      <ion-button *ngIf="reports.drafts.length" slot="start" color="medium" (click)="popReports(reports.drafts,$event)">
+        下書き{{reports.drafts.length}}件
+      </ion-button>
+      <ion-button *ngIf="reports.requests.length" slot="start" color="secondary"
+        (click)="popReports(reports.requests,$event)">
+        申請中{{reports.requests.length}}件
+      </ion-button>
+      <ion-button *ngIf="reports.posts.length" slot="start" color="warning" (click)="popReports(reports.posts,$event)">
+        審査中{{reports.posts.length}}件
+      </ion-button>
+      <ion-button *ngIf="reports.acks.length" slot="start" color="success" (click)="popReports(reports.acks,$event)">
+        公開済{{reports.acks.length}}件
+      </ion-button>
+      <ion-button (click)="undo(report)" fill="clear" [disabled]="!report.id">
+        　 <ion-icon name="refresh-circle" slot="icon-only" color="warning"></ion-icon>
+      </ion-button>
+      <ion-title>レポート投稿</ion-title>
+      <ng-container *ngIf="report.id">
+        <ion-item *ngIf="report.author" button="true" [routerLink]="'/user/'+report.author.id">
+          <ion-avatar>
+            <img [src]="report.author.avatar" />
+          </ion-avatar>
+          {{report.author.na}}
+        </ion-item>
+        <ion-button [disabled]="!report.id" (click)="newReport()" slot="end" fill="clear">
+          <ion-icon name="create" slot="icon-only" color="secondary"></ion-icon>
+        </ion-button>
+        <ion-button (click)="preview()" [disabled]="!reportForm.valid || !report.id" slot="end" fill="clear">
+          <ion-icon name="browsers" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ng-container *ngIf="report.user===user.id">
+          <ion-button [disabled]="!reportForm.valid || !reportForm.dirty || !report.id" (click)="save(-1)" slot="end" fill="clear">
+            <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button [disabled]="!reportForm.valid||!report.id" (click)="save(0)" slot="end" fill="clear">
+            <ion-icon name="send" slot="icon-only" color="success"></ion-icon>
+          </ion-button>
+        </ng-container>
+        <ng-container *ngIf="user.admin">
+          <ion-button [disabled]="!reportForm.valid||!report.id" (click)="save(1)" slot="end" fill="clear">
+            <ion-icon name="thumbs-up" slot="icon-only" color="success"></ion-icon>
+          </ion-button>
+          <ion-button [disabled]="!reportForm.valid || !report.id" (click)="save(-1)" slot="end" fill="clear">
+            <ion-icon name="thumbs-down" slot="icon-only" color="dark"></ion-icon>
+          </ion-button>
+        </ng-container>
+        <ion-button [disabled]="!(report.user===user.id||user.admin)||!report.id" (click)="eraseClick()" color="danger" slot="end"
+          fill="clear">
+          <ion-icon name="trash" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ng-container>
+    </div>
+  </ion-toolbar>
+</ion-header>
+<ion-content #content [scrollEvents]="true" (ionScrollEnd)="onScrollEnd()">
+  <form [formGroup]="reportForm">
+    <ion-grid>
+      <ion-row>
+        <ion-col #basic size-xs="12" size-sm="12" size-md="6" size-lg="6" size-xl="6">
+          <ion-title class="caption">Basic</ion-title>            
+          <ion-item>
+            <ion-label position="floating">
+              タイトル<ion-text color="danger">*</ion-text>
+            </ion-label>
+            <ion-input required [formControl]="na" minlength="2" maxlength="30" placeholder="伊豆スカイラインから南伊豆マーガレットラインへ"
+              (ionBlur)="naBlur()"></ion-input>
+          </ion-item>
+          <span *ngIf="na.errors?.minlength||na.errors?.maxlength" class="errmsg">２文字以上３０文字以下で入力してください。</span>
+          <ion-item>
+            <ion-label class="leftLabel" slot="start">種類<ion-text color="danger">*</ion-text>
+            </ion-label>
+            <ion-select name="genre" slot="start" placeholder="選択してください" [formControl]="genre" (ionChange)="genreChange()">
+              <ion-select-option *ngFor="let genre of genres" [value]="genre.id">
+                <span #genreOptions>{{genre.na}}</span>
+              </ion-select-option>
+            </ion-select>
+            <ion-button slot="end" class="search" (click)="add('genre','種類','バイク')" fill="clear">
+              <ion-icon name="add-circle" slot="icon-only" color="secondary"></ion-icon>　
+            </ion-button>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">
+              説明文
+            </ion-label>
+            <ion-textarea [formControl]="description" autoGrow="true" maxlength="300"></ion-textarea>
+          </ion-item>
+          <span *ngIf="description.errors?.minlength||description.errors?.maxlength"
+            class="errmsg">２文字以上３００文字以下で入力してください。</span>
+          <ion-item>
+            <ion-label position="floating">イメージ</ion-label>
+            <img *ngIf="imgBase64;else orgimg" class="img" [src]="imgBase64" />
+            <ng-template #orgimg>
+              <img *ngIf="report.img" class="img" [src]="report.img" alt="イメージ" />
+            </ng-template>
+            <ion-button slot="end" (click)="popCrop()" fill="clear">
+              　 <ion-icon name="image" slot="icon-only" color="success"></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="imgBase64" slot="end" (click)="imgBase64=''" fill="clear">
+              　 <ion-icon name="close-circle" slot="icon-only" color="danger"></ion-icon>
+            </ion-button>
+          </ion-item>  
+        </ion-col>
+        <ion-col #map size-xs="12" size-sm="12" size-md="6" size-lg="6" size-xl="6">
+          <app-map typ="report" [parent]="report.id" [markers]="markers" [travelMode]="travelMode"></app-map>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <ion-title #essay class="caption">Essay</ion-title>
+    <app-story typ="report" [document]="report" [user]="user" (resetMarkers)="resetMarkers($event)"></app-story>   
+  </form>
+  <ion-fab vertical="top" horizontal="end" slot="fixed">
+    <ion-fab-button *ngIf="currentY>basicY+50" (click)="scroll(basicY)" color="light" size="small">
+      Basic
+    </ion-fab-button>
+    <ion-fab-button *ngIf="currentY>mapY+50" (click)="scroll(mapY)" color="light" size="small">
+      Map
+    </ion-fab-button>
+    <ion-fab-button *ngIf="currentY>essayY+50" (click)="scroll(essayY)" color="light" size="small">
+      Essay
+    </ion-fab-button>
+  </ion-fab>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button *ngIf="currentY+contentH<mapY" (click)="scroll(mapY)" color="light" size="small">
+      Map
+    </ion-fab-button>
+    <ion-fab-button *ngIf="currentY+contentH<essayY" (click)="scroll(essayY)" color="light" size="small">
+      Essay
+    </ion-fab-button> 
+  </ion-fab>
+</ion-content>
+
+
+<!--
+*ngIf="currentY > contentY"
+
+     <ion-select name="shop" slot="start" placeholder="選択してください" [formControl]="shop" (ionFocus)="popList('shop')">
+        <ion-select-option value="{{shopping.id}}" selected>{{shopping.na}}</ion-select-option>
+      </ion-select>
+  <ion-item>
+            <ion-label slot="start">喫煙</ion-label>
+            <ion-select name="tabacco" slot="start" [formControl]="tabacco" placeholder="選択してください">
+              <ion-select-option value="4">ヘビー</ion-select-option>
+              <ion-select-option value="3">吸う</ion-select-option>
+              <ion-select-option value="2">断ってから</ion-select-option>
+              <ion-select-option value="1">客前では吸わない</ion-select-option>
+              <ion-select-option value="0">吸わない</ion-select-option>
+            </ion-select>
+            <ion-button slot="end" (click)="tabacco.reset()" fill="clear">
+              　　<ion-icon name="help-circle" slot="icon-only" color="medium"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <ion-item>
+            <ion-label slot="start">刺青</ion-label>
+            <ion-select name="tattoo" slot="start" [formControl]="tattoo" placeholder="選択してください">
+              <ion-select-option value="4">全身</ion-select-option>
+              <ion-select-option value="3">半身</ion-select-option>
+              <ion-select-option value="2">大きめ</ion-select-option>
+              <ion-select-option value="1">ワンポイント</ion-select-option>
+              <ion-select-option value="0">なし</ion-select-option>
+            </ion-select>
+            <ion-button slot="end" (click)="tattoo.reset()" fill="clear">
+              　　<ion-icon name="help-circle" slot="icon-only" color="medium"></ion-icon>
+            </ion-button>  
+-->

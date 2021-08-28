@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "iotstay"
+  },
+  "targets": {
+    "iotstay": {
+      "hosting": {
+        "app": [
+          "iotstay"
+        ]
+      }
+    }
+  }
+}

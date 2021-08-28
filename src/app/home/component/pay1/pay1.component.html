@@ -1,0 +1,66 @@
+<div *ngIf="apiLoaded | async">
+  <div class="ion-padding">
+    <ion-title>返金について</ion-title>
+    <span></span>
+    <span></span>
+    <p></p>
+    <ion-title>プライバシーポリシー</ion-title>
+    <ion-text>クレジットカード番号はトークン化したうえで通信されます。本システムにカード情報が記録されることはありません。</ion-text>
+    <p></p>
+    <p></p>
+    <ng-container *ngIf="amount0 else firstpay">
+      <ion-title *ngIf="amount - amount0 > 0 else refund">追加料金:{{amount - amount0 | number}}円</ion-title>
+      <ng-template #refund>
+        <ion-title *ngIf="amount && amount0 - amount > 0">返金額:{{amount0 - amount | number}}円</ion-title>
+      </ng-template>
+    </ng-container>
+    <ng-template #firstpay>
+      <ion-title *ngIf="amount else noamount">利用料：{{amount | number}}円</ion-title>
+      <ng-template #noamount>
+        <ion-title style="color:red">{{amount0?"変更":"予約"}}できません</ion-title>
+      </ng-template>
+    </ng-template>
+    <form [formGroup]="cardForm" *ngIf="!card.last4||card.change">
+      <ion-list>
+        <ion-list-header>
+          <ion-img [src]="cardimg">
+          </ion-img>※現在、VISAカード及びMASTERカードのみ対応です。
+        </ion-list-header>
+        <ion-item>
+          <ion-label class="leftLabel">カード番号</ion-label>
+          <ion-input [formControl]="cardNumber" name="cardNumber" placeholder="4242424242424242" slot="end"></ion-input>
+        </ion-item>
+        <span *ngIf="cardNumber.errors?.pattern && cardNumber.dirty"
+          class="errmsg">半角数字16桁または0000-0000-0000-0000形式で入力してください</span>
+        <ion-item>
+          <ion-label class="leftLabel">セキュリティコード</ion-label>
+          <ion-button icon-only (click)="whatCvc=!whatCvc">
+            <ion-icon name="help-circle"></ion-icon>
+          </ion-button>
+          <ion-input [formControl]="cardCvc" name="cardCvc" placeholder="123" slot="end"></ion-input>
+          <img *ngIf="whatCvc" [src]="cvcimg" />
+        </ion-item>
+        <span *ngIf="cardCvc.errors?.pattern && cardCvc.dirty" class="errmsg">半角数字3桁で入力してください</span>
+        <ion-item>
+          <ion-text class="leftText">有効期限</ion-text>
+          <ion-datetime display-format="YYYY年M月" picker-format="YYYY年M月" [formControl]="cardRimit" name="cardRimit"
+            placeholder="2025年6月" doneText="決定" cancelText="取消" min="2021" max="2030" slot="end">
+          </ion-datetime>
+        </ion-item>
+        <div style="text-align: center;">
+          <ion-button color="tertiary" (click)="newpay()" [disabled]="cardForm.invalid ||!amount">同意して{{method}}する</ion-button>
+        </div>
+      </ion-list>
+    </form>
+  </div>
+  <div *ngIf="card.last4" class="ion-padding">
+    <p>登録済クレジットカード</p>
+    　 <p>カード番号　　{{card.brand}} ****-****-****-{{card.last4}}</p>
+    <p>有効期間　　　{{card.exp_year}}年{{card.exp_month}}月</p>
+    <ion-item class="payButton" lines="none">
+      <ion-button [disabled]="!amount && !amount0" color="tertiary" (click)="payClick('')">同意して{{method}}する</ion-button>
+      <ion-button *ngIf="!card.change" [disabled]="!amount" color="light" (click)="card.change=true" slot="end">
+        クレジットカードを変更する</ion-button>
+    </ion-item>
+  </div>
+</div>

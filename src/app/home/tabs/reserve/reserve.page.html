@@ -1,0 +1,87 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-menu-button slot="start"></ion-menu-button>
+    <ion-title *ngIf="from && to;else notime">
+      <div *ngIf="!calendarService.aday;else aday">{{from|date}}～{{to|date:'tomorrow'}}の予約</div>
+      <ng-template #aday>{{from|date}} 日帰りの予約</ng-template>
+    </ion-title>
+    <ng-template #notime>
+      <ion-title>日時を選択してください。</ion-title>
+    </ng-template><!--
+    <ion-button (click)="cron()" slot="end" fill="clear">
+      <ion-icon name="trash" slot="icon-only" color="warning"></ion-icon>
+    </ion-button>
+    <ion-button [disabled]="!editable"
+      [routerLink]="'/manage/book/' + prop.id + '/' + dateFormat(from) + '/' + dateFormat(to)" slot="end" fill="clear">
+      <ion-icon name="create" slot="icon-only" color="secondary"></ion-icon>
+    </ion-button>-->
+    <ion-button (click)="openCalendar()" slot="end" fill="clear">
+      <ion-icon name="calendar" slot="icon-only" color="primary"></ion-icon>
+    </ion-button>
+    <ion-menu-button menu="end" slot="end">
+      <ion-icon name="footsteps"></ion-icon>
+    </ion-menu-button>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-card *ngIf="books.length">
+    <ion-card-header>
+      <ion-card-title>予約済　{{books.length }}件</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item *ngFor="let book of books" button="true" (click)="clickBook(book)">
+        <ng-container *ngIf="book.aday && book.from===book.to; else fromto">
+          <ion-text slot="start">{{book.from|date}}</ion-text>{{book.room}} (size:{{book.size}})
+        </ng-container>
+        <ng-template #fromto>
+          <ion-text slot="start">{{book.from|date}}～{{book.to|date:'tomorrow'}}</ion-text>{{book.room}}
+          (size:{{book.size}})
+        </ng-template>
+        <ion-text slot="end">{{book.amount | number}}円</ion-text>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+  <ion-item button="true" (click)="openUnit()">
+    <ion-icon name="people" color="primary"></ion-icon>{{unitStr.people}}
+    <ion-icon name="car" color="primary"></ion-icon>{{unitStr.vehicle}}
+    (size:{{sizeStr}})
+  </ion-item>
+  <ion-grid *ngFor="let roomTyp of roomTyps">
+    <div *ngIf="roomTyp.na" class="title">
+      <h2>{{roomTyp.na}}</h2>
+    </div>
+    <ion-row>
+      <ion-col *ngFor="let room of roomTyp.rooms" size-xs="6" size-sm="4" size-md="3" size-lg="6" size-xl="4">
+        <ion-card [button]="!room.status" (click)="clickRoom(room)">
+          <ion-card-header>
+            <ion-card-title>{{room.title}}</ion-card-title>
+            <ion-card-subtitle *ngIf="room.msg" style="color:red">{{room.msg}}</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <img [src]="room.img" />{{room.na}}({{room.size}}㎡)
+            <div *ngIf="room.amount!=null && !room.status" class="amount">{{room.amount | number}}円</div>
+            <!--      <ion-item *ngIf="room.users.length">
+              <ion-avatar *ngFor="let user of room.users" button="true"><img [src]="user.avatar" [alt]="user.na"/></ion-avatar>
+            </ion-item>-->
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <div class="addwrap">
+      <ion-button [routerLink] = "'/post/room/typ/' + roomTyp.id" fill="clear">
+        <ion-icon name="add-circle" slot="icon-only" color="secondary"></ion-icon>
+      </ion-button>
+    </div>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<!--
+
+
+
+
+ [disabled]="to.getTime()>=now.getTime()&&xScale.value===1"
+
+ [routerLink]="'/book/' + room.id + '/' + dateFormat(from) + '/' + dateFormat(to)
+  
+-->

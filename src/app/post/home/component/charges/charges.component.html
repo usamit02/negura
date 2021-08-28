@@ -1,0 +1,23 @@
+<ion-list *ngFor="let typ of typs;let i=index;">
+  <ion-item>{{typ.na}}
+    <ion-button (click)="typ.hide=!typ.hide" slot="end" fill="clear">
+      <ion-icon *ngIf="typ.hide else show" name="caret-down" slot="icon-only" color="dark"></ion-icon>
+      <ng-template #show>
+        <ion-icon name="caret-up" slot="icon-only" color="dark"></ion-icon>
+      </ng-template>
+    </ion-button>
+  </ion-item>
+  <ng-container *ngIf="!typ.hide">
+    <ion-reorder-group (ionItemReorder)="reorder(i,$event)" disabled="false">
+      <ion-item *ngFor="let c of typ.charges"  (click)="change.emit(c.id)" button="true">
+        <ion-reorder slot="start"></ion-reorder>
+        {{c.na}}
+      </ion-item>
+    </ion-reorder-group>
+    <div class="addwrap">
+      <ion-button [routerLink]="'/post/charge/' + prop.id + '/' + room + '/' + typ.key" fill="clear">
+        <ion-icon name="add-circle" slot="icon-only" color="secondary"></ion-icon>
+      </ion-button>
+    </div>
+  </ng-container>
+</ion-list>

@@ -1,0 +1,18 @@
+<ion-fab vertical="top" horizontal="end" slot="fixed">
+  <ion-fab-button *ngIf="pos.y>50" (click)="scroll(0)" color="light" size="small">
+    <ion-icon name="caret-up"></ion-icon>
+  </ion-fab-button>  
+</ion-fab>
+<ion-fab vertical="bottom" horizontal="end" slot="fixed"> 
+  <ion-fab-button *ngIf="pos.y+pos.h<pos.H-50" (click)="scroll(pos.H)" color="light" size="small">
+    <ion-icon name="caret-down"></ion-icon>
+  </ion-fab-button> 
+</ion-fab>
+
+<!--
+
+ <app-eval *ngIf="currentY+contentH===scrollH && user.id && blog.user && isStory" typ="blog" [id]="blog.id"
+    [user]="user.id" [author]="blog.user" [na]="blog.na"></app-eval>-->
+
+
+<!--    marker.user!==user.id       -->

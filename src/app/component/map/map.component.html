@@ -1,0 +1,39 @@
+
+ <div *ngIf="apiLoaded | async">
+  <google-map #map height="500px" width="100%" [center]="center">
+    <map-marker #mark="mapMarker" *ngFor="let m of markers" [options]="m.option" (mapClick)="openInfoWindow(mark,m)" (mapMouseover)="openInfoWindow(mark,m)"></map-marker>
+    <map-info-window>
+      <strong>{{mark.na}}</strong>
+      <div>{{mark.txt}}</div>
+      <img *ngIf="mark.img" [src]="mark.img" />
+    </map-info-window>
+    <map-directions-renderer *ngIf="(directionsResults$ | async) as directionsResults"
+      [directions]="directionsResults" [options]="options"></map-directions-renderer>
+  </google-map>
+</div>
+
+
+
+
+
+
+<!--
+
+<agm-map [latitude]='lat' [longitude]='lng' [fullscreenControl]='true' [fitBounds]="true">   
+  <agm-direction [origin]="origin" [destination]="destination" [waypoints]="waypoints" [travelMode]="travelMode" 
+  [markerOptions]="markerOptions" [renderOptions]="renderOptions" [visible]="visible" ></agm-direction>
+</agm-map>
+
+ <agm-marker *ngFor="let marker of markers" (markerClick)="markerClick(marker);"
+    (markerRightClick)="markerRightClick(marker)" (mouseOver)="mouseOver($event,marker)" [latitude]="marker.lat"
+    [longitude]="marker.lng" [label]="marker.idx.toString()"
+    [iconUrl]="{ url: icon[marker.icon].url, scaledSize: { width: 30, height: 30, anchor : {x:0, y:50} }}"
+    [agmFitBounds]="true">
+    <agm-info-window #infoWindow [isOpen]="isInfoWindowOpen(marker.id)">
+      <div>{{marker.txt}}</div>
+      <img *ngIf="marker.img" [src]="marker.img" />
+    </agm-info-window>
+  </agm-marker>
+
+
+-->
